@@ -32,4 +32,4 @@ jobs:
       run: go build -ldflags "-X main.date=`date -u +%Y-%m-%dT%H:%M:%SZ` -X main.version=`git describe --tags`" -o bin/htmltest-$TRAVIS_OS_NAME -x main.go
 
     - name: Test
-      run: go test -v .
+      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... ./...
