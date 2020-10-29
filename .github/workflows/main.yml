@@ -28,8 +28,27 @@ jobs:
       run: |
         go get -v -t -d ./...
 
-    - name: Build
-      run: go build -ldflags "-X main.date=`date -u +%Y-%m-%dT%H:%M:%SZ` -X main.version=`git describe --tags`" -o bin/htmltest-${{ matrix.os }} -x main.go
-
     - name: Test
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... ./...
+
+    - name: Report Coverage 
+      run: go tool cover -func=coverage.txt
+
+    - name: Build, print usage and version, then run on config, dir, and file
+      run: |
+        go build -ldflags "-X main.date=`date -u +%Y-%m-%dT%H:%M:%SZ` -X main.version=`git describe --tags`" -o bin/htmltest-${{ matrix.os }} -x main.go
+        
+        # Print Usage 
+        bin/htmltest-${{ matrix.os }} -h
+
+        # Print Version
+        bin/htmltest-${{ matrix.os }} -v
+
+        # Run config
+        bin/htmltest-${{ matrix.os }} -c htmldoc/fixtures/conf.yaml -l0
+
+        # Run on dir
+        bin/htmltest-${{ matrix.os }} htmldoc/fixtures/documents/dir1
+
+        # Run on file
+        bin/htmltest-${{ matrix.os }} htmltest/fixtures/links/head_link_href.html
